@@ -1,0 +1,84 @@
+[MASTER]
+# Configuration pylint pour Librairie ABC
+# Usage: pylint --rcfile=.pylintrc src/ tests/
+
+# Nombre de workers (processeurs)
+jobs=0
+
+# Charger tous les plugins
+load-plugins=pylint.extensions.docparams,pylint.extensions.typing
+
+# Répertoires ignorés
+ignore=migrations,__pycache__,.git,.venv,venv
+
+# Patterns ignorés
+ignore-patterns=test_.*
+
+[MESSAGES CONTROL]
+# Désactiver certains avertissements
+disable=
+    missing-function-docstring,  # Trop strict pour les tests
+    protected-access,             # _private accepté
+    no-member,                     # Faux positifs avec datetime, etc
+    too-few-public-methods,        # Classes utilitaires acceptées
+    too-many-arguments,            # Limiter à raison
+    import-outside-toplevel,       # Imports dynamiques OK
+    bare-except,                   # Au moins logguer le bare except
+
+[REPORTS]
+# Activer les rapports
+reports=yes
+output-format=text
+
+[FORMAT]
+# Style de code
+max-line-length=120
+indent-string='    '
+indent-after-paren=4
+
+[VARIABLES]
+# Déclarations de variables
+init-import=no
+dummy-variables-rgx=_+$|^ignored_|^unused_
+
+[DESIGN]
+# Complexité et taille
+max-args=6                  # Nombre max d'arguments
+max-attributes=10           # Nombre max d'attributs
+max-bool-expr=5             # Max expressions booléennes
+max-branches=12             # Max branches dans une fonction
+max-locals=15               # Max variables locales
+max-returns=6               # Max return statements
+max-statements=50           # Max statements dans une fonction
+min-public-methods=1        # Min public methods
+max-public-methods=20       # Max public methods
+
+[SIMILARITIES]
+# Détection de duplication
+min-similarity-lines=4
+ignore-comments=yes
+ignore-docstrings=yes
+
+[IMPORTS]
+# Gestion des imports
+allow-any-import-level=yes
+known-third-party=pytest,unittest
+
+[LOGGING]
+# Configuration du logging
+logging-format-style=new
+logging-modules=logging
+
+[SPELLING]
+# Ne pas vérifier l'orthographe (français)
+spelling-ignore-words=
+
+[TYPECHECK]
+# Vérification de types
+ignore-mixin-members=yes
+mixin-class-rgx=.*[Mm]ixin
+
+[BASIC]
+# Nommage des variables
+good-names=i,j,k,ex,Run,_
+bad-names=foo,bar,baz,toto,tutu,tata

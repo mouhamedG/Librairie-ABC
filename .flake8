@@ -1,0 +1,55 @@
+[flake8]
+# Configuration flake8 pour Librairie ABC
+# Usage: flake8 src/ tests/
+
+# Longueur max d'une ligne
+max-line-length = 120
+
+# Indentation
+indent-size = 4
+
+# Répertoires ignorés
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    migrations,
+    .eggs,
+    *.egg,
+    build,
+    dist
+
+# Fichiers ignorés
+ignore =
+    E203,  # Whitespace before ':'
+    E501,  # Line too long (géré par Black)
+    W503,  # Line break before binary operator
+    W504,  # Line break after binary operator
+
+# Codes flake8 sélectionnés
+# E - PEP 8 erreurs
+# W - PEP 8 avertissements
+# F - PyFlakes erreurs
+# C - McCabe complexité
+# N - pep8-naming
+
+select = E,W,F,C,N
+
+# Arrêter à la première erreur
+count = False
+
+# Rapport statistique
+statistics = True
+
+# Verbose output
+verbose = 0
+
+# Fichier d'exception (exemple)
+# enable-extensions = H101
+
+# Max complexité cyclomatique
+max-complexity = 10
+
+# Formats acceptables
+format = default
