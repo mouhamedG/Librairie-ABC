@@ -8,7 +8,7 @@
 
 | Métrique | Valeur |
 |----------|--------|
-| **Pylint - Problèmes** | 66 |
+| **Pylint - Problèmes** | 43 |
 | **Flake8 - Erreurs de style** | 0 |
 | **Bandit - Problèmes de sécurité** | 0 |
 | **Coverage - Couverture tests** | 96% |
@@ -16,10 +16,10 @@
 ## 🔍 PYLINT - Analyse de qualité
 
 - Erreurs: 0
-- Avertissements: 19
+- Avertissements: 14
 - Refactoring: 4
-- Conventions: 43
-- **Total**: 66
+- Conventions: 25
+- **Total**: 43
 
 ## 🔍 FLAKE8 - Vérification de style
 
