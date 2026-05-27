@@ -24,10 +24,7 @@ class LivreAlreadyReservedError(LibrairieABCError):
 
 
 class LivreNotReservedError(LibrairieABCError):
-    """
-    Exception levée quand on essaie d'annuler
-    la réservation d'un livre non réservé.
-    """
+    """Exception levée quand on essaie d'annuler un livre non réservé."""
 
     def __init__(self, titre: str) -> None:
         self.titre = titre

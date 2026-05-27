@@ -1,131 +1,164 @@
 """
 Module de logging pour la bibliothèque ABC.
-Loggue les opérations sensibles et erreurs pour audit et debugging.
+
+Loggue les opérations sensibles et les erreurs
+pour l'audit et le debugging.
 """
 
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
+
+LOG_FILE_PATH = "logs/librairie_abc.log"
+LOGGER_NAME = "librairie_abc"
 
 
-def setup_logger(name: str, log_file: Optional[str] = None, level: int = logging.INFO) -> logging.Logger:
-    """
-    Configure un logger avec format structuré.
-    
-    Args:
-        name: Nom du logger
-        log_file: Chemin optionnel du fichier de log
-        level: Niveau de logging (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        
-    Returns:
-        Logger configuré
-    """
+def setup_logger(
+    name: str,
+    log_file: str | None = None,
+    level: int = logging.INFO,
+) -> logging.Logger:
+    """Configure un logger avec un format structuré."""
     logger = logging.getLogger(name)
     logger.setLevel(level)
-    
-    # Format structuré
+
+    if logger.handlers:
+        return logger
+
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
-    
-    # Console handler
+
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
-    
-    # File handler (optionnel)
+
     if log_file:
         try:
             log_path = Path(log_file)
-            log_path.parent.mkdir(parents=True, exist_ok=True)
-            file_handler = logging.FileHandler(log_path)
+            log_path.parent.mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            file_handler = logging.FileHandler(
+                log_path,
+                encoding="utf-8",
+            )
             file_handler.setLevel(level)
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
-        except Exception as e:
-            logger.warning(f"Impossible de créer le fichier de log {log_file}: {e}")
-    
+
+        except OSError as error:
+            logger.warning(
+                f"Impossible de créer le fichier "
+                f"de log {log_file}: {error}"
+            )
+
     return logger
 
 
-# Logger global
-_logger = None
+LOGGER = setup_logger(
+    LOGGER_NAME,
+    log_file=LOG_FILE_PATH,
+    level=logging.INFO,
+)
 
 
 def get_logger() -> logging.Logger:
-    """Obtient le logger global."""
-    global _logger
-    if _logger is None:
-        _logger = setup_logger(
-            'librairie_abc',
-            log_file='logs/librairie_abc.log',
-            level=logging.INFO
-        )
-    return _logger
+    """Retourne le logger global."""
+    return LOGGER
 
 
-def log_operation(operation: str, details: dict = None) -> None:
-    """
-    Loggue une opération (format structuré).
-    
-    Args:
-        operation: Nom de l'opération (ex: 'ajouter_livre', 'reserver_livre')
-        details: Détails supplémentaires (dict)
-    """
+def format_details(
+    details: dict[str, Any] | None = None,
+) -> str:
+    """Formate les détails optionnels."""
+    if details is None:
+        return ""
+
+    return f" - {details}"
+
+
+def log_operation(
+    operation: str,
+    details: dict[str, Any] | None = None,
+) -> None:
+    """Loggue une opération métier."""
     logger = get_logger()
-    details_str = f" - {details}" if details else ""
-    logger.info(f"[OPERATION] {operation}{details_str}")
+
+    message = (
+        "[OPERATION] "
+        + operation
+        + format_details(details)
+    )
+
+    logger.info(message)
 
 
-def log_error(error_type: str, error_msg: str, details: dict = None) -> None:
-    """
-    Loggue une erreur.
-    
-    Args:
-        error_type: Type d'erreur
-        error_msg: Message d'erreur
-        details: Détails supplémentaires
-    """
+def log_error(
+    error_type: str,
+    error_msg: str,
+    details: dict[str, Any] | None = None,
+) -> None:
+    """Loggue une erreur applicative."""
     logger = get_logger()
-    details_str = f" - {details}" if details else ""
-    logger.error(f"[{error_type}] {error_msg}{details_str}")
+
+    message = (
+        "["
+        + error_type
+        + "] "
+        + error_msg
+        + format_details(details)
+    )
+
+    logger.error(message)
 
 
-def log_warning(warning_msg: str, details: dict = None) -> None:
-    """
-    Loggue un avertissement.
-    
-    Args:
-        warning_msg: Message d'avertissement
-        details: Détails supplémentaires
-    """
+def log_warning(
+    warning_msg: str,
+    details: dict[str, Any] | None = None,
+) -> None:
+    """Loggue un avertissement applicatif."""
     logger = get_logger()
-    details_str = f" - {details}" if details else ""
-    logger.warning(f"[WARNING] {warning_msg}{details_str}")
+
+    message = (
+        "[WARNING] "
+        + warning_msg
+        + format_details(details)
+    )
+
+    logger.warning(message)
 
 
-def log_validation_error(field: str, reason: str) -> None:
-    """
-    Loggue une erreur de validation.
-    
-    Args:
-        field: Champ concerné
-        reason: Raison du rejet
-    """
-    log_error('VALIDATION_ERROR', f"Validation échouée pour '{field}'", {'raison': reason})
+def log_validation_error(
+    field: str,
+    reason: str,
+) -> None:
+    """Loggue une erreur de validation."""
+    log_error(
+        "VALIDATION_ERROR",
+        f"Validation échouée pour '{field}'",
+        {"raison": reason},
+    )
 
 
-def log_security_event(event: str, details: dict = None) -> None:
-    """
-    Loggue un événement de sécurité.
-    
-    Args:
-        event: Description de l'événement
-        details: Détails supplémentaires
-    """
+def log_security_event(
+    event: str,
+    details: dict[str, Any] | None = None,
+) -> None:
+    """Loggue un événement de sécurité."""
     logger = get_logger()
-    details_str = f" - {details}" if details else ""
-    logger.warning(f"[SECURITY_EVENT] {event}{details_str}")
+
+    message = (
+        "[SECURITY_EVENT] "
+        + event
+        + format_details(details)
+    )
+
+    logger.warning(message)
+
+    
